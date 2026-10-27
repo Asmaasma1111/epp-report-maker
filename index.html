@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>EPP Report Maker</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='10' y='4' width='44' height='56' rx='6' fill='%23fffdf8' stroke='%23283a8a' stroke-width='4'/%3E%3Cpath d='M20 22h24M20 32h24M20 42h14' stroke='%23c00000' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="styles.css">
+<script>
+  // Apply the saved theme and text size before the page paints.
+  try {
+    var t = localStorage.getItem('erm-theme'); if (t) document.documentElement.dataset.theme = t;
+    var s = localStorage.getItem('erm-text'); if (s) document.documentElement.style.fontSize = s + 'px';
+  } catch (e) {}
+</script>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-logo"><img src="assets/interlink.jpg" alt="INTERLINK International Institutes"></div>
+      <div>
+        <h1>Report Maker</h1>
+        <p class="brand-sub">EPP · Level 1 Final Report</p>
+      </div>
+    </div>
+    <nav class="steps" aria-label="Steps">
+      <button type="button" class="step" data-step="details"><span class="num">1</span><span><b>Class details</b><small>Term, period and signatures</small></span></button>
+      <button type="button" class="step" data-step="students"><span class="num">2</span><span><b>Students and scores</b><small id="navStudents">No students yet</small></span></button>
+      <button type="button" class="step" data-step="download"><span class="num">3</span><span><b>Download</b><small>PDFs and backup</small></span></button>
+    </nav>
+    <div class="tools">
+      <div class="tool-row">
+        <span>Theme</span>
+        <div class="seg" role="group" aria-label="Theme">
+          <button type="button" data-theme-set="light">Day</button>
+          <button type="button" data-theme-set="dark">Night</button>
+        </div>
+      </div>
+      <div class="tool-row">
+        <span>Text size</span>
+        <div class="seg" role="group" aria-label="Text size">
+          <button type="button" data-text="-1" aria-label="Smaller text">A−</button>
+          <button type="button" data-text="1" aria-label="Bigger text">A+</button>
+        </div>
+      </div>
+    </div>
+    <p class="privacy"><span aria-hidden="true">🔒</span> Everything you type stays in this browser on this device. Nothing is sent online.</p>
+  </aside>
+
+  <main>
+    <!-- Step 1 -->
+    <section class="panel" id="step-details" data-panel="details">
+      <header class="panel-head">
+        <p class="eyebrow">Step 1</p>
+        <h2>Class <span class="soft">details</span></h2>
+        <p class="lead">Fill these in once. They appear on every student's report.</p>
+      </header>
+
+      <div class="title-preview" aria-live="polite">
+        <span class="label">Report title</span>
+        <span id="titlePreview">LEVEL 1 FINAL REPORT – SEMESTER ___ (TERM ___/ _____)</span>
+      </div>
+
+      <div class="grid">
+        <label class="field"><span>Semester</span>
+          <select id="semester"><option value="">Choose</option><option>1</option><option>2</option></select>
+        </label>
+        <label class="field"><span>Term</span>
+          <input id="term" inputmode="numeric" maxlength="4" placeholder="e.g. 1">
+        </label>
+        <label class="field"><span>Year</span>
+          <input id="year" maxlength="12" placeholder="e.g. 2026">
+        </label>
+        <label class="field wide"><span>Period of assessment</span>
+          <input id="period" maxlength="80" placeholder="e.g. September 6th – October 29th 2026">
+        </label>
+      </div>
+
+      <h3>Signatures</h3>
+      <p class="hint">Leave a name empty to print a line for signing by hand.</p>
+      <div class="grid">
+        <label class="field wide"><span>Course Instructor's name <em>(optional)</em></span>
+          <input id="instructor" maxlength="60" placeholder="e.g. Dr. Asma Khattala">
+        </label>
+        <label class="field"><span>Countersigned by (title)</span>
+          <input id="countersignTitle" maxlength="40" placeholder="School Principal">
+        </label>
+        <label class="field"><span>Their name <em>(optional)</em></span>
+          <input id="countersignName" maxlength="60" placeholder="e.g. Ms. Hanan Al-Harbi">
+        </label>
+      </div>
+
+      <h3>School logo</h3>
+      <div class="logo-row">
+        <div class="logo-frame"><img id="logoPreview" src="assets/school-mksgt.jpg" alt="School logo used on the reports"></div>
+        <div>
+          <p class="hint" id="logoNote">The MKSGT logo prints at the top right. Teaching somewhere else? Use your own school's logo.</p>
+          <div class="btn-row">
+            <label class="btn secondary file-btn">Use my school's logo<input type="file" id="logoFile" accept="image/png,image/jpeg"></label>
+            <button type="button" class="btn ghost" id="logoReset" hidden>Back to the MKSGT logo</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-foot">
+        <button type="button" class="btn primary" data-goto="students">Next: students and scores →</button>
+      </div>
+    </section>
+
+    <!-- Step 2 -->
+    <section class="panel" id="step-students" data-panel="students" hidden>
+      <header class="panel-head">
+        <p class="eyebrow">Step 2</p>
+        <h2>Students <span class="soft">and scores</span></h2>
+        <p class="lead">Type each score. The level, can-do statement, totals and grade letter fill in by themselves, following the report guide.</p>
+      </header>
+
+      <div class="btn-row">
+        <button type="button" class="btn secondary" id="addStudent">+ Add a student</button>
+        <button type="button" class="btn secondary" id="togglePaste" aria-expanded="false">Paste a class list</button>
+      </div>
+      <div class="paste-box" id="pasteBox" hidden>
+        <label class="field wide"><span>One student per line: name, then ID. You can copy the two columns straight from Excel.</span>
+          <textarea id="pasteText" rows="6" placeholder="Aleen Al Thnayan	1149996348&#10;Dalia Al Wehaibi	1151392188"></textarea>
+        </label>
+        <div class="btn-row">
+          <button type="button" class="btn primary" id="pasteAdd">Add these students</button>
+          <button type="button" class="btn ghost" id="pasteCancel">Cancel</button>
+        </div>
+      </div>
+
+      <div class="students">
+        <div class="student-list-wrap">
+          <ol class="student-list" id="studentList" aria-label="Students"></ol>
+          <p class="empty" id="emptyList">No students yet. Add one or paste your class list.</p>
+        </div>
+
+        <div class="editor" id="editor" hidden>
+          <div class="grid two">
+            <label class="field"><span>Student's name</span>
+              <input id="sName" maxlength="70" autocomplete="off">
+            </label>
+            <label class="field"><span>ID</span>
+              <input id="sId" maxlength="20" inputmode="numeric" autocomplete="off">
+            </label>
+          </div>
+          <p class="warn" id="arabicWarn" hidden>Please type the name in English letters. The report font cannot print Arabic letters.</p>
+
+          <div class="scores" id="scores"></div>
+
+          <div class="totals">
+            <div><span>Language Proficiency</span><b id="tLp">–</b></div>
+            <div><span>Overall Score</span><b id="tTotal">–</b></div>
+            <div><span>Grade Letter</span><b id="tGrade" class="grade">–</b></div>
+          </div>
+
+          <label class="field wide"><span>Comment <em>(prints under the Overall Score)</em></span>
+            <textarea id="sComment" rows="4" maxlength="900"></textarea>
+          </label>
+          <p class="hint" id="commentHint"></p>
+
+          <div class="btn-row">
+            <button type="button" class="btn primary" id="previewOne">Preview report</button>
+            <button type="button" class="btn secondary" id="downloadOne">Download this report</button>
+          </div>
+          <div class="btn-row nav-row">
+            <button type="button" class="btn ghost" id="prevStudent">← Previous</button>
+            <button type="button" class="btn ghost" id="nextStudent">Next student →</button>
+            <button type="button" class="btn danger ghost" id="removeStudent">Remove student</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-foot">
+        <button type="button" class="btn primary" data-goto="download">Next: download →</button>
+      </div>
+    </section>
+
+    <!-- Step 3 -->
+    <section class="panel" id="step-download" data-panel="download" hidden>
+      <header class="panel-head">
+        <p class="eyebrow">Step 3</p>
+        <h2>Download <span class="soft">the reports</span></h2>
+        <p class="lead" id="readySummary">No students yet.</p>
+      </header>
+      <ul class="not-ready" id="notReady"></ul>
+
+      <div class="cards">
+        <div class="card">
+          <h3>All reports as a ZIP file</h3>
+          <p>A separate PDF for each student, named after them. Handy for sending one report at a time.</p>
+          <button type="button" class="btn primary" id="zipAll">Download ZIP</button>
+        </div>
+        <div class="card">
+          <h3>All reports in one PDF</h3>
+          <p>Every report in one file, one page each. Handy for printing and signing.</p>
+          <button type="button" class="btn primary" id="pdfAll">Download one PDF</button>
+        </div>
+      </div>
+
+      <h3>Backup</h3>
+      <p class="hint">Your class is saved in this browser automatically. Save a class file to keep a copy, or to carry on from another computer.</p>
+      <div class="btn-row">
+        <button type="button" class="btn secondary" id="saveClass">Save a class file</button>
+        <label class="btn secondary file-btn">Open a class file<input type="file" id="openClass" accept=".json,application/json"></label>
+        <button type="button" class="btn danger ghost" id="newClass">Start a new class</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<dialog id="previewDialog" aria-labelledby="previewTitle">
+  <div class="dialog-head">
+    <h2 id="previewTitle">Preview</h2>
+    <div class="btn-row">
+      <button type="button" class="btn secondary" id="previewDownload">Download</button>
+      <button type="button" class="btn ghost" id="previewClose">Close</button>
+    </div>
+  </div>
+  <iframe id="previewFrame" title="Report preview"></iframe>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="statements.js"></script>
+<script src="report.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
